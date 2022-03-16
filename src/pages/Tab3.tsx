@@ -1,25 +1,98 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
+import React from 'react';
+import {
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  IonCard,
+  IonCardHeader,
+  IonCardSubtitle,
+  IonCardTitle,
+  IonCardContent,
+  useIonViewWillEnter,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent
+} from '@ionic/react';
+import { useState } from 'react';
+import axios from 'axios';
 import './Tab3.css';
 
 const Tab3: React.FC = () => {
-  return (
-    <IonPage>
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>Tab 3</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-      <IonContent fullscreen>
-        <IonHeader collapse="condense">
+  const [data, setData] = useState<string[]>([]);
+  const [isInfiniteDisabled, setInfiniteDisabled] = useState(false);
+
+  const sendRequest = () => {
+    return axios.get('https://api.openweathermap.org/data/2.5/weather?q=toulouse&appid=1496441316839412fc14c32c0b803f36')
+    .then((response) => {
+      console.log(response)
+      return response.data;
+    })
+  };
+
+  const pushData = () => {
+    const max = data.length + 20;
+    const min = max - 20;
+    const newData: any[] = [];
+    for (let i = min; i < max; i++) {
+      sendRequest().then((quote) => {
+        newData.push(quote.quote)
+        setData([
+          ...data,
+          ...newData
+        ])
+      })
+    }
+  }
+
+  const loadData = (ev: any) => {
+    setTimeout(() => {
+      pushData();
+      ev.target.complete();
+      if (data.length === 1000) {
+        setInfiniteDisabled(true);
+      }
+    }, 500);
+  }  
+  
+  useIonViewWillEnter(() => {
+    pushData();
+  })
+    return(
+      <IonPage>
+        <IonHeader>
           <IonToolbar>
-            <IonTitle size="large">Tab 3</IonTitle>
+            <IonTitle>Kanye is the Real Deal</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <ExploreContainer name="Tab 3 page" />
-      </IonContent>
-    </IonPage>
-  );
+        <IonContent class="ion-text-center">
+          {data.map((item, index) => {
+            return (
+              <IonCard key={index}>
+                <IonCardHeader>
+                  <IonCardSubtitle>Good News !</IonCardSubtitle>
+                  <IonCardTitle>Kanye Says</IonCardTitle>
+                </IonCardHeader>
+                <IonCardContent>
+                  {item}
+                </IonCardContent>
+              </IonCard>
+            )
+          })}
+
+        <IonInfiniteScroll
+          onIonInfinite={loadData}
+          threshold="100px"
+          disabled={isInfiniteDisabled}
+        >
+          <IonInfiniteScrollContent
+            loadingSpinner="bubbles"
+            loadingText="Loading more data..."
+          ></IonInfiniteScrollContent>
+        </IonInfiniteScroll>
+        </IonContent>
+      </IonPage>
+    );
 };
 
 export default Tab3;
