@@ -63,10 +63,10 @@ const App: React.FC = () => (
             <IonIcon icon={ellipse} />
             <IonLabel>Users</IonLabel>
           </IonTabButton>
-          {/* <IonTabButton tab="tab3" href="/tab3">
+          <IonTabButton tab="tab3" href="/tab3">
             <IonIcon icon={square} />
-            <IonLabel>Tab 3</IonLabel>
-          </IonTabButton> */}
+            <IonLabel>Weather</IonLabel>
+          </IonTabButton>
         </IonTabBar>
       </IonTabs>
     </IonReactRouter>
